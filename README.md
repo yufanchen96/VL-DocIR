@@ -2,23 +2,21 @@
 
 **NeurIPS 2026 · Evaluations & Datasets**
 
-Simon Ott*, Yufan Chen*†, Ruiping Liu, Junwei Zheng, Jiale Wei, Di Wen, Kunyu Peng, Jiaming Zhang, Rainer Stiefelhagen
+Simon Ott<sup>&ast;</sup>, Yufan Chen<sup>&ast;†</sup>, Ruiping Liu, Junwei Zheng, Jiale Wei, Di Wen, Kunyu Peng, Jiaming Zhang, Rainer Stiefelhagen
 
 Karlsruhe Institute of Technology; Hunan University (Jiaming Zhang)
 
-*Equal contribution. †Corresponding author: Yufan Chen.
+<sup>&ast;</sup> Equal contribution. <sup>†</sup> Corresponding author: Yufan Chen.
 
 [Paper](https://openreview.net/pdf?id=SxsberZw0W) · [OpenReview](https://openreview.net/forum?id=SxsberZw0W) · [Project page](https://yufanchen96.github.io/VL-DocIR/) · [Dataset](https://huggingface.co/datasets/anonymous-8421/VL-DocIR) · [Dataset files](https://huggingface.co/datasets/anonymous-8421/VL-DocIR/tree/main)
 
-## Overview
+## Abstract
 
 Vision-based document retrieval has improved rapidly, but current evaluation settings still emphasize short documents and single relevant pages. This leaves an important gap between leaderboard performance and realistic long-document retrieval, where the evidence needed to answer a query may span multiple pages or even multiple documents. We present VL-DocIR, a page-level benchmark for evidence-complete visual long-document retrieval. VL-DocIR is built from 29,641 HTML-born documents rendered into 388,548 page images from Wikipedia, arXiv, PubMed, and SEC proxy statements. It contains 271,760 queries across 23 domains and six evidence structures, covering single-page, within-document multi-page, and cross-document evidence configurations. Evidence annotations are grounded to rendered pages and HTML element identifiers, and queries are filtered with a cleaning pipeline targeting clarity, correctness, closedness, and the absence of explicit layout references. We evaluate leading single-vector and multi-vector visual retrievers together with diagnostic retrieval settings such as document-context scoring, query splitting, reranking, and round-robin ensembles. The strongest evaluated configuration reaches 69.3 nDCGAll@10 and 80.6 RecallAll@10 under structure-balanced Macro evaluation, but source- and evidence-structure breakdowns show that cross-document retrieval remains substantially harder than single-page retrieval, and that document-context scoring is especially helpful for within-document multi-page queries. VL-DocIR exposes these failure modes and provides a more demanding target for visual long-document retrieval.
 
-This repository contains the paper introduction, manuscript-result exports and static project page. The dataset and its documentation are hosted on Hugging Face.
+![Cross-document retrieval with ColQwen2.5 and reranking](docs/assets/cross-document-rerank.jpg)
 
-![Cross-document retrieval example from the paper](docs/assets/cross-document-rerank.jpg)
-
-*Original manuscript example: the question requires evidence pages from both SpaceX CRS-2 and CRS-15 documents. The figure compares ColQwen2.5 retrieval with reranking.*
+*The question requires evidence from both SpaceX CRS-2 and CRS-15. ColQwen2.5 retrieves one evidence page in the top five; reranking retrieves both.*
 
 ## Task and corpus
 
@@ -35,19 +33,18 @@ The same page-retrieval task permits visual, OCR-based, text-only and hybrid int
 
 | Evidence structure | Retrieval target | Queries | `question_type` |
 |---|---|---:|---|
-| Page-Single | One evidence on one page | 86,196 | `single-page_single-evidence` |
-| Page-Multi | Multiple evidences on one page | 120,624 | `single-page_multi-evidence` |
+| Page-Single | One evidence element on one page | 86,196 | `single-page_single-evidence` |
+| Page-Multi | Multiple evidence elements on one page | 120,624 | `single-page_multi-evidence` |
 | Doc-Adjacent | Adjacent pages in one document | 11,972 | `multi-page_connected` |
 | Doc-Near | Nearby non-adjacent pages in one document | 3,392 | `multi-page_disconnected-close` |
 | Doc-Far | Far-apart pages in one document | 2,563 | `multi-page_disconnected-distant` |
 | Cross-Doc | Pages across different documents | 47,013 | `cross-document_same-type` |
 
-
 The taxonomy separates page lookup from within-document and cross-document evidence retrieval. The query distribution is not uniform; structure-balanced Macro prevents the two large single-page groups from dominating the primary aggregate.
 
 ## Benchmark construction
 
-![Benchmark query creation process from the manuscript](docs/assets/query-creation.png)
+![Query creation: evidence-configuration sampling, VLM generation, and query cleaning](docs/assets/query-creation.png)
 
 1. **Document collection and rendering.** Source-specific collection creates broad domain coverage and related-document neighborhoods. HTML documents are rendered with headless Chrome/Playwright; element identifiers and bounding boxes support evidence alignment. Pages are 2000 × 4000 pixels, with boundary heuristics to reduce split content.
 2. **Evidence-configuration sampling.** Visually rich pages and related page/document pairs define single-page, within-document and cross-document generation configurations.
@@ -78,7 +75,7 @@ Standard nDCG uses binary relevance for evidence pages. Standard Recall and nDCG
 
 ## Results
 
-Representative complete-evidence results at k = 10 on the full 388,548-page corpus:
+Complete-evidence retrieval results at k = 10 on the full 388,548-page corpus. Scores are percentages.
 
 | Model / setting | Macro nDCGAll@10 | Macro RecallAll@10 | Micro nDCGAll@10 | Micro RecallAll@10 |
 |---|---:|---:|---:|---:|
@@ -93,22 +90,21 @@ Representative complete-evidence results at k = 10 on the full 388,548-page corp
 | Ctx + OCR-BM25 (RRF) | 65.13 | 78.67 | 69.75 | 84.24 |
 | Rerank + OCR-BM25 (RRF) | 61.86 | 74.39 | 69.34 | 83.30 |
 
+ColNomic (Ensemble) achieves 69.28 nDCGAll@10 and 80.64 RecallAll@10 under Macro. OCR-BM25 achieves 61.69 Macro RecallAll@10. Adding OCR-BM25 to ColNomic (Ctx) raises Macro RecallAll@10 from 78.19 to 78.67, while nDCGAll@10 falls from 66.03 to 65.13.
 
-The strongest evaluated configuration reaches 69.28 nDCGAll@10 and 80.64 RecallAll@10 under Macro. OCR-BM25 reaches 61.69 Macro RecallAll@10. Combining it with ColNomic context retrieval raises complete-evidence recall from 78.19 to 78.67, while nDCGAll changes from 66.03 to 65.13. Cross-document retrieval remains a difficult regime.
-
-[results.csv](results.csv) contains all 19 configurations from the current main-text table, with Macro and Micro values for all 12 metric/cutoff combinations. [results-provenance.json](results-provenance.json) identifies the manuscript table and source hash. These files transcribe the current paper results; they are not a newly executed evaluation or an independently reconstructed corrected-qrels release.
+Full results for all 19 configurations are available in [results.csv](results.csv), including Macro and Micro nDCG, Recall, nDCGAll, and RecallAll at k = 3, 5, and 10.
 
 ## Annotation validation and limitations
 
 A stratified human audit covers all 24 source × evidence-structure cells with 800 entries: 50 Cross-Doc and 30 entries per other structure for each source. **746/800 entries are fully correct (93.25%; nominal 95% Wilson interval 91.3–94.8%)**. Cross-Doc correctness is **88.5%**, with 200 audited entries representing 199 unique queries.
 
-The 54 issue entries comprise 13 query-formulation issues, 20 incorrect evidence sets, 17 unnecessary evidence-page sets and four non-presence queries without directly retrievable positive evidence. These are pre-adjudication audit proportions, rather than population-wide or post-correction accuracy estimates. The audit checks the supplied query–evidence pairs and does not enumerate every alternative valid evidence set in the full corpus.
+The 54 entries with issues include 13 query-formulation errors, 20 incorrect evidence sets, 17 sets containing unnecessary evidence pages, and four queries without directly retrievable positive evidence. The audit reviewed the supplied query–evidence pairs before adjudication and did not enumerate alternative valid evidence sets across the full corpus.
 
-The paper also examines page/element consistency for all 47,013 Cross-Doc queries and 100,504 evidence elements. Mechanical mapping flags and semantic annotation errors are distinct. The remaining scope limitations are VLM-generated queries, page-level evaluation and HTML-born documents; scanned and handwritten documents are outside the present corpus.
+We also check page/element consistency for all 47,013 Cross-Doc queries and 100,504 evidence elements. Mapping consistency is checked separately from semantic annotation correctness. VL-DocIR uses VLM-generated queries and evaluates retrieval at the page level. The corpus contains HTML-born documents and does not cover scanned or handwritten documents.
 
 ## Dataset access
 
-Use the [Hugging Face dataset repository](https://huggingface.co/datasets/anonymous-8421/VL-DocIR) and [file tree](https://huggingface.co/datasets/anonymous-8421/VL-DocIR/tree/main) for the data. The current release requires a manual access request. Request access on the dataset page, then authenticate locally with `hf auth login`.
+The dataset is hosted on [Hugging Face](https://huggingface.co/datasets/anonymous-8421/VL-DocIR). Request access on the dataset page, then authenticate locally with `hf auth login`. The [file tree](https://huggingface.co/datasets/anonymous-8421/VL-DocIR/tree/main) contains the following collections and archives:
 
 | File / directory | Contents |
 |---|---|
@@ -120,8 +116,7 @@ Use the [Hugging Face dataset repository](https://huggingface.co/datasets/anonym
 | `document_texts/` | Stored source HTML and element metadata |
 | `VL-DocIR_croissant.json` | Machine-readable dataset metadata |
 
-
-The Hub exposes `questions`, `question_evidences`, `documents` and `document_pages` as configurations, each with a split named `train`. This is a packaging label for the released collections, rather than a separate benchmark training partition.
+The Hub exposes `questions`, `question_evidences`, `documents` and `document_pages` as configurations, each with a split named `train`. The `train` label refers to the released collection; VL-DocIR does not define a separate benchmark training partition.
 
 Load the questions collection:
 
@@ -137,7 +132,7 @@ questions = load_dataset(
 )
 ```
 
-The pinned revision is [`40a1818110c20e9279bbb4a3b6283ceac2d631ba`](https://huggingface.co/datasets/anonymous-8421/VL-DocIR/tree/40a1818110c20e9279bbb4a3b6283ceac2d631ba). The same configuration and split pattern applies to the other three JSONL collections. Consult the [versioned dataset card](https://huggingface.co/datasets/anonymous-8421/VL-DocIR/blob/40a1818110c20e9279bbb4a3b6283ceac2d631ba/README.md) for field definitions and the page archives for images; loading the questions collection does not download the page corpus.
+The example pins dataset revision [`40a1818110c20e9279bbb4a3b6283ceac2d631ba`](https://huggingface.co/datasets/anonymous-8421/VL-DocIR/tree/40a1818110c20e9279bbb4a3b6283ceac2d631ba). Use the same configuration and split pattern for the other three JSONL collections. Field definitions are in the [dataset card](https://huggingface.co/datasets/anonymous-8421/VL-DocIR/blob/40a1818110c20e9279bbb4a3b6283ceac2d631ba/README.md); rendered images are stored separately in `pages/`.
 
 ### Linking questions, evidence and pages
 
@@ -150,7 +145,7 @@ The pinned revision is [`40a1818110c20e9279bbb4a3b6283ceac2d631ba`](https://hugg
 
 ### Licensing
 
-The Hub dataset card licenses generated annotations and related metadata under CC BY 4.0. Underlying documents retain the source-specific licenses recorded in `documents.jsonl`; check those records when reusing source content. The website implementation license does not relicense the paper figures or underlying dataset documents.
+Generated annotations and related metadata are released under CC BY 4.0, as described in the dataset card. Source documents retain the licenses recorded in `documents.jsonl`.
 
 ## Citation
 
@@ -171,9 +166,3 @@ The Hub dataset card licenses generated annotations and related metadata under C
 Simon Ott: [simon.ott@student.kit.edu](mailto:simon.ott@student.kit.edu)
 
 Yufan Chen (corresponding author): [yufan.chen@kit.edu](mailto:yufan.chen@kit.edu)
-
-## Project page
-
-The [project page](https://yufanchen96.github.io/VL-DocIR/) source is in `docs/`.
-
-GitHub Pages deploys the `docs/` directory through the workflow in `.github/workflows/pages.yml`. To preview locally, run `python3 -m http.server --directory docs 8000` and visit `http://localhost:8000`.
