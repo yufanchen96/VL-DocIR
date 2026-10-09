@@ -1,0 +1,27 @@
+{
+  "results_source": "Sec/experiment.tex, tab:overall_metric_summary",
+  "results_source_sha256": "7ac5f58ff387e586ffdf161d347a51f7608aec0e6e9a873c4faffa515ef4d387",
+  "description": "Transcription of the current camera-ready manuscript table; not a newly executed evaluation.",
+  "metrics": [
+    "ndcg@3",
+    "ndcg@5",
+    "ndcg@10",
+    "recall@3",
+    "recall@5",
+    "recall@10",
+    "ndcg_all@3",
+    "ndcg_all@5",
+    "ndcg_all@10",
+    "recall_all@3",
+    "recall_all@5",
+    "recall_all@10"
+  ],
+  "methods": 19,
+  "aggregates": [
+    "Macro",
+    "Micro"
+  ],
+  "dataset_repository": "anonymous-8421/VL-DocIR",
+  "dataset_directory_revision": "40a1818110c20e9279bbb4a3b6283ceac2d631ba",
+  "dataset_revision_note": "This pins the inspected Hub release; it does not certify a separately versioned adjudicated-qrels release."
+}

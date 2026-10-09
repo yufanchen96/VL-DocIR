@@ -1,0 +1,14 @@
+[
+  {
+    "asset": "query-creation.png",
+    "source": "Images/Query_Creation.pdf",
+    "sha256": "383d28632e019bffa5550b8d0008c46c0ef1faa94857acaf28fd0c62a55320b6",
+    "transform": "PDF rasterization with the manuscript trim=2cm 4cm 2cm 4cm; no redrawing"
+  },
+  {
+    "asset": "cross-document-rerank.jpg",
+    "source": "Images/CrossDocumentRerankSample.jpg",
+    "sha256": "0da43f10110f9f3e417a24211ce204143f47a9d62297473450a5a6e767703665",
+    "transform": "Byte-identical copy"
+  }
+]

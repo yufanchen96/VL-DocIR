@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VL-DocIR: A Benchmark for Vision-Based Long Document Information Retrieval</title>
+  <meta name="description" content="VL-DocIR: evidence-complete page retrieval over 29,641 visually rich long documents and 271,760 queries.">
+  <meta property="og:title" content="VL-DocIR: A Benchmark for Vision-Based Long Document Information Retrieval">
+  <meta property="og:description" content="A benchmark for evidence-complete visual long-document retrieval.">
+  <meta property="og:image" content="https://yufanchen96.github.io/VL-DocIR/assets/cross-document-rerank.jpg">
+  <meta property="og:url" content="https://yufanchen96.github.io/VL-DocIR/">
+  <link rel="canonical" href="https://yufanchen96.github.io/VL-DocIR/">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#abstract">Skip to paper overview</a>
+<header class="paper-header container">
+  <h1><span class="paper-name">VL-DocIR:</span> A Benchmark for Vision-Based<br class="desktop-break"> Long Document Information Retrieval</h1>
+  <p class="venue">NeurIPS 2026 · Evaluations &amp; Datasets</p>
+  <div class="authors"><div class="author-row"><span><a href="https://openreview.net/profile?id=~Simon_Ott2">Simon Ott</a><sup>1,*</sup></span>
+<span><a href="https://openreview.net/profile?id=~Yufan_Chen2">Yufan Chen</a><sup>1,*,†</sup></span>
+<span><a href="https://openreview.net/profile?id=~Ruiping_Liu1">Ruiping Liu</a><sup>1</sup></span>
+<span><a href="https://openreview.net/profile?id=~Junwei_Zheng1">Junwei Zheng</a><sup>1</sup></span>
+<span><a href="https://openreview.net/profile?id=~Jiale_Wei2">Jiale Wei</a><sup>1</sup></span></div><div class="author-row"><span><a href="https://openreview.net/profile?id=~Di_Wen2">Di Wen</a><sup>1</sup></span>
+<span><a href="https://openreview.net/profile?id=~Kunyu_Peng1">Kunyu Peng</a><sup>1</sup></span>
+<span><a href="https://openreview.net/profile?id=~Jiaming_Zhang5">Jiaming Zhang</a><sup>2</sup></span>
+<span><a href="https://openreview.net/profile?id=~Rainer_Stiefelhagen1">Rainer Stiefelhagen</a><sup>1</sup></span></div></div>
+  <p class="affiliations"><span><sup>1</sup> Karlsruhe Institute of Technology</span><span><sup>2</sup> Hunan University</span></p>
+  <p class="author-note">* Equal contribution. &nbsp; † Corresponding author: Yufan Chen.</p>
+  <p class="emails"><a href="mailto:simon.ott@student.kit.edu">simon.ott@student.kit.edu</a> &nbsp; <a href="mailto:yufan.chen@kit.edu">yufan.chen@kit.edu</a></p>
+  <nav class="resources" aria-label="Paper resources">
+    <a href="https://openreview.net/pdf?id=SxsberZw0W">Paper</a><a href="https://huggingface.co/datasets/anonymous-8421/VL-DocIR">Dataset</a><a href="https://github.com/yufanchen96/VL-DocIR">GitHub</a><a href="#citation">BibTeX</a>
+  </nav>
+</header>
+<main>
+  <figure class="teaser container">
+    <a href="assets/cross-document-rerank.jpg" aria-label="Open the original cross-document retrieval example at full resolution"><img src="assets/cross-document-rerank.jpg" width="4057" height="2646" alt="Original paper example: a question about the landing dates of SpaceX CRS-2 and CRS-15 requires pages from two documents; the figure compares ColQwen2.5 with reranking." fetchpriority="high"></a>
+    <figcaption>Cross-document retrieval example from the paper. Answering the question requires recovering the evidence pages from both documents.</figcaption>
+  </figure>
+  <section id="abstract" class="section reading">
+    <h2>Abstract</h2>
+    <p class="abstract">Vision-based document retrieval has improved rapidly, but current evaluation settings still emphasize short documents and single relevant pages. This leaves an important gap between leaderboard performance and realistic long-document retrieval, where the evidence needed to answer a query may span multiple pages or even multiple documents. We present VL-DocIR, a page-level benchmark for evidence-complete visual long-document retrieval. VL-DocIR is built from 29,641 HTML-born documents rendered into 388,548 page images from Wikipedia, arXiv, PubMed, and SEC proxy statements. It contains 271,760 queries across 23 domains and six evidence structures, covering single-page, within-document multi-page, and cross-document evidence configurations. Evidence annotations are grounded to rendered pages and HTML element identifiers, and queries are filtered with a cleaning pipeline targeting clarity, correctness, closedness, and the absence of explicit layout references. We evaluate leading single-vector and multi-vector visual retrievers together with diagnostic retrieval settings such as document-context scoring, query splitting, reranking, and round-robin ensembles. The strongest evaluated configuration reaches 69.3 nDCGAll@10 and 80.6 RecallAll@10 under structure-balanced Macro evaluation, but source- and evidence-structure breakdowns show that cross-document retrieval remains substantially harder than single-page retrieval, and that document-context scoring is especially helpful for within-document multi-page queries. VL-DocIR exposes these failure modes and provides a more demanding target for visual long-document retrieval.</p>
+  </section>
+  <section id="benchmark" class="section container">
+    <h2>The VL-DocIR Benchmark</h2>
+    <p class="reading">VL-DocIR is a page-level document retrieval benchmark for visually rich long documents. Unlike standard page-level retrieval evaluations that reward retrieving any relevant page, VL-DocIR measures evidence-complete retrieval: a system succeeds only when it retrieves the full set of evidence pages.</p>
+    <p class="reading">The corpus contains <strong>29,641 documents</strong> and <strong>388,548 rendered pages</strong> from Wikipedia, arXiv, PubMed and SEC proxy statements. The <strong>271,760 queries</strong> cover <strong>23 domains</strong> and six evidence structures.</p>
+    <figure>
+      <a href="assets/query-creation.png" aria-label="Open the original benchmark query creation figure"><img src="assets/query-creation.png" width="1800" height="1015" loading="lazy" alt="Original benchmark query creation figure, showing evidence-configuration sampling, VLM query generation and query cleaning."></a>
+      <figcaption>Benchmark query creation process overview, reproduced from the manuscript.</figcaption>
+    </figure>
+    <p class="reading">The query creation pipeline consists of three stages: evidence-configuration sampling, VLM-based query generation and query cleaning. Evidence element identifiers are resolved to rendered pages and page-relative bounding boxes. Cleaning targets query clarity, answer correctness or plausibility, closedness and the absence of explicit layout references.</p>
+    <div class="table-scroll taxonomy" tabindex="0" role="region" aria-label="Evidence structures and query counts">
+      <table><thead><tr><th scope="col">Evidence structure</th><th scope="col">Retrieval target</th><th scope="col">Queries</th></tr></thead><tbody><tr><th scope="row">Page-Single</th><td>One evidence on one page</td><td>86,196</td></tr>
+<tr><th scope="row">Page-Multi</th><td>Multiple evidences on one page</td><td>120,624</td></tr>
+<tr><th scope="row">Doc-Adjacent</th><td>Adjacent pages in one document</td><td>11,972</td></tr>
+<tr><th scope="row">Doc-Near</th><td>Nearby non-adjacent pages in one document</td><td>3,392</td></tr>
+<tr><th scope="row">Doc-Far</th><td>Far-apart pages in one document</td><td>2,563</td></tr>
+<tr><th scope="row">Cross-Doc</th><td>Pages across different documents</td><td>47,013</td></tr></tbody></table>
+    </div>
+  </section>
+  <section id="evaluation" class="section reading">
+    <h2>Evidence-Complete Evaluation</h2>
+    <p>At evaluation time, a retriever receives only the question and ranks pages from the full corpus. For a query <i>q</i>, let <i>E(q)</i> be its ground-truth evidence-page set and <i>R<sub>k</sub>(q)</i> the retrieved top-<i>k</i> page set. Completion requires every page in <i>E(q)</i> to appear in <i>R<sub>k</sub>(q)</i>.</p>
+    <div class="equations" aria-label="Evidence-complete metric definitions">
+      <p>RecallAll@<i>k</i>(<i>q</i>) = 𝟙[<i>E(q)</i> ⊆ <i>R<sub>k</sub>(q)</i>]</p>
+      <p>nDCGAll@<i>k</i>(<i>q</i>) = RecallAll@<i>k</i>(<i>q</i>) · nDCG@<i>k</i>(<i>q</i>)</p>
+    </div>
+    <p>Standard nDCG uses binary relevance for the evidence pages. <strong>Structure-balanced Macro is the primary aggregate</strong>: first average the query scores within each evidence structure, then average the six structure means equally. Micro averages over all queries and is reported as a secondary aggregate. Results are percentages.</p>
+  </section>
+  <section id="results" class="section container">
+    <h2>Retrieval Results</h2>
+    <p class="reading">The paper evaluates single-vector and multi-vector visual retrievers, OCR-BM25, OCR-dense with BGE-M3, native-HTML DOM-BM25 and visual–text hybrids. All methods in this comparison search the same full 388,548-page corpus.</p>
+    <div class="table-scroll" tabindex="0" role="region" aria-label="Representative retrieval results under Macro and Micro">
+      <table id="main-results"><thead><tr><th rowspan="2" scope="col">Model / setting</th><th colspan="2" scope="colgroup">Macro · primary</th><th colspan="2" scope="colgroup">Micro</th></tr><tr><th scope="col">nDCGAll@10</th><th scope="col">RecallAll@10</th><th scope="col">nDCGAll@10</th><th scope="col">RecallAll@10</th></tr></thead><tbody><tr><th scope="row">ColQwen3</th><td>63.20</td><td>72.42</td><td>72.15</td><td>81.24</td></tr><tr><th scope="row">ColNomic</th><td>61.82</td><td>71.76</td><td>70.68</td><td>81.24</td></tr><tr><th scope="row">ColNomic (Ctx)</th><td>66.03</td><td>78.19</td><td>70.07</td><td>82.26</td></tr><tr><th scope="row">ColNomic (Rerank)</th><td>65.00</td><td>74.62</td><td>73.76</td><td>83.11</td></tr><tr><th scope="row">ColNomic (Ensemble)</th><td><strong>69.28</strong></td><td><strong>80.64</strong></td><td><strong>75.64</strong></td><td><strong>86.23</strong></td></tr><tr><th scope="row">OCR-BM25</th><td>50.24</td><td>61.69</td><td>58.26</td><td>72.34</td></tr><tr><th scope="row">OCR-dense (BGE-M3)</th><td>19.35</td><td>24.70</td><td>23.86</td><td>31.12</td></tr><tr><th scope="row">DOM-BM25</th><td>46.96</td><td>57.44</td><td>53.07</td><td>65.72</td></tr><tr><th scope="row">Ctx + OCR-BM25 (RRF)</th><td>65.13</td><td>78.67</td><td>69.75</td><td>84.24</td></tr><tr><th scope="row">Rerank + OCR-BM25 (RRF)</th><td>61.86</td><td>74.39</td><td>69.34</td><td>83.30</td></tr></tbody></table>
+    </div>
+    <p class="table-note">Results from the current manuscript, at <i>k</i> = 10. ColNomic (Ensemble) combines reranked, context and base lists by ordered round-robin fusion. The two visual–text hybrids use equal-weight RRF with OCR-BM25. DOM-BM25 has access to native HTML text.</p>
+    <p class="reading">ColNomic (Ensemble) reaches <strong>69.28 nDCGAll@10</strong> and <strong>80.64 RecallAll@10</strong> under Macro. OCR-BM25 reaches 61.69 Macro RecallAll@10; fusion with ColNomic (Ctx) changes Macro RecallAll@10 from 78.19 to 78.67 and nDCGAll@10 from 66.03 to 65.13.</p>
+    <details class="full-results"><summary>All 19 evaluated configurations at <i>k</i> = 10</summary><div class="table-scroll" tabindex="0" role="region" aria-label="All evaluated retrieval configurations"><table><thead><tr><th rowspan="2" scope="col">Model / setting</th><th colspan="2" scope="colgroup">Macro · primary</th><th colspan="2" scope="colgroup">Micro</th></tr><tr><th scope="col">nDCGAll@10</th><th scope="col">RecallAll@10</th><th scope="col">nDCGAll@10</th><th scope="col">RecallAll@10</th></tr></thead><tbody><tr><th scope="row">ColSmol 500</th><td>47.33</td><td>58.15</td><td>56.58</td><td>69.81</td></tr><tr><th scope="row">ColModernVBERT</th><td>44.29</td><td>54.35</td><td>53.20</td><td>65.96</td></tr><tr><th scope="row">GME Qwen2-VL</th><td>55.10</td><td>67.34</td><td>62.11</td><td>76.22</td></tr><tr><th scope="row">Jina V4 SV</th><td>48.03</td><td>60.24</td><td>55.10</td><td>70.00</td></tr><tr><th scope="row">Jina V4 MV</th><td>59.59</td><td>70.77</td><td>67.98</td><td>80.03</td></tr><tr><th scope="row">ColQwen3</th><td>63.20</td><td>72.42</td><td>72.15</td><td>81.24</td></tr><tr><th scope="row">ColPali v1.3</th><td>39.41</td><td>49.13</td><td>47.85</td><td>60.26</td></tr><tr><th scope="row">ColPali v1.3 (Rerank)</th><td>51.12</td><td>57.16</td><td>61.33</td><td>67.17</td></tr><tr><th scope="row">ColQwen2.5</th><td>56.72</td><td>67.23</td><td>65.51</td><td>77.04</td></tr><tr><th scope="row">ColQwen2.5 (Rerank)</th><td>62.88</td><td>71.62</td><td>71.94</td><td>80.36</td></tr><tr><th scope="row">ColNomic</th><td>61.82</td><td>71.76</td><td>70.68</td><td>81.24</td></tr><tr><th scope="row">ColNomic (Ctx)</th><td>66.03</td><td>78.19</td><td>70.07</td><td>82.26</td></tr><tr><th scope="row">ColNomic (Rerank)</th><td>65.00</td><td>74.62</td><td>73.76</td><td>83.11</td></tr><tr><th scope="row">ColNomic (Ensemble)</th><td><strong>69.28</strong></td><td><strong>80.64</strong></td><td><strong>75.64</strong></td><td><strong>86.23</strong></td></tr><tr><th scope="row">OCR-BM25</th><td>50.24</td><td>61.69</td><td>58.26</td><td>72.34</td></tr><tr><th scope="row">OCR-dense (BGE-M3)</th><td>19.35</td><td>24.70</td><td>23.86</td><td>31.12</td></tr><tr><th scope="row">DOM-BM25</th><td>46.96</td><td>57.44</td><td>53.07</td><td>65.72</td></tr><tr><th scope="row">Ctx + OCR-BM25 (RRF)</th><td>65.13</td><td>78.67</td><td>69.75</td><td>84.24</td></tr><tr><th scope="row">Rerank + OCR-BM25 (RRF)</th><td>61.86</td><td>74.39</td><td>69.34</td><td>83.30</td></tr></tbody></table></div></details>
+    <p class="reading result-download"><a href="results.csv" download>Download all manuscript metrics as CSV</a> · nDCG, Recall, nDCGAll and RecallAll at <i>k</i> ∈ {3, 5, 10}, under both Macro and Micro.</p>
+  </section>
+  <section id="validation" class="section reading">
+    <h2>Annotation Quality</h2>
+    <p>A stratified human review covers <strong>800 entries</strong> across all <strong>24 source × evidence-structure combinations</strong>: 50 Cross-Doc entries and 30 entries for each other structure per source. Of these, <strong>746/800 (93.25%)</strong> are fully correct; the nominal 95% Wilson interval is 91.3–94.8%. Cross-Doc quality is lower at 88.5%.</p>
+    <p>The observed issues comprise 13 formulation issues, 20 incorrect evidence sets, 17 sets containing an unnecessary evidence page and four non-presence queries. These rates describe the pre-adjudication audited entries. The benchmark retains limitations from VLM-generated queries, page-level evaluation and its restriction to HTML-born documents. See the paper and <a href="https://huggingface.co/datasets/anonymous-8421/VL-DocIR">dataset card</a> for the audit details.</p>
+  </section>
+  <section id="dataset" class="section container">
+    <h2>Dataset</h2>
+    <p class="reading">Dataset files are hosted on <a href="https://huggingface.co/datasets/anonymous-8421/VL-DocIR">Hugging Face</a>. This GitHub repository provides the paper overview and project page; follow the Hub links for data access, documentation and source-license metadata.</p>
+    <div class="table-scroll dataset-files" tabindex="0" role="region" aria-label="Dataset files on Hugging Face"><table><thead><tr><th scope="col">File / directory</th><th scope="col">Contents</th></tr></thead><tbody><tr><th scope="row"><a href="https://huggingface.co/datasets/anonymous-8421/VL-DocIR/blob/main/questions.jsonl"><code>questions.jsonl</code></a></th><td>Query text, answers, evidence structure and generator metadata</td></tr>
+<tr><th scope="row"><a href="https://huggingface.co/datasets/anonymous-8421/VL-DocIR/blob/main/question_evidences.jsonl"><code>question_evidences.jsonl</code></a></th><td>Evidence-page identifiers, element IDs and bounding boxes</td></tr>
+<tr><th scope="row"><a href="https://huggingface.co/datasets/anonymous-8421/VL-DocIR/blob/main/documents.jsonl"><code>documents.jsonl</code></a></th><td>Document source, domain, title, URL and license metadata</td></tr>
+<tr><th scope="row"><a href="https://huggingface.co/datasets/anonymous-8421/VL-DocIR/blob/main/document_pages.jsonl"><code>document_pages.jsonl</code></a></th><td>Page identifiers and page-shard references</td></tr>
+<tr><th scope="row"><a href="https://huggingface.co/datasets/anonymous-8421/VL-DocIR/tree/main/pages/"><code>pages/</code></a></th><td>Rendered page-image archives</td></tr>
+<tr><th scope="row"><a href="https://huggingface.co/datasets/anonymous-8421/VL-DocIR/tree/main/document_texts/"><code>document_texts/</code></a></th><td>Stored source HTML and element metadata</td></tr>
+<tr><th scope="row"><a href="https://huggingface.co/datasets/anonymous-8421/VL-DocIR/blob/main/VL-DocIR_croissant.json"><code>VL-DocIR_croissant.json</code></a></th><td>Machine-readable dataset metadata</td></tr></tbody></table></div>
+    <div class="reading">
+      <p>The current Hub release requires an access request. After access is granted, authenticate locally with <code>hf auth login</code>. For example, the questions collection can be loaded as follows:</p>
+      <pre><code>from datasets import load_dataset
+
+questions = load_dataset(
+    &quot;anonymous-8421/VL-DocIR&quot;,
+    &quot;questions&quot;,
+    split=&quot;train&quot;,
+    revision=&quot;40a1818110c20e9279bbb4a3b6283ceac2d631ba&quot;,
+    token=True,
+)
+</code></pre>
+      <p class="table-note">The Hub exposes the four JSONL collections as configurations with a split named <code>train</code>. This is the release's packaging label, rather than a separate benchmark training partition. Use <code>(document_id, page_number)</code> as the page key and deduplicate multiple evidence elements on the same page when constructing the evidence-page set.</p>
+      <p><a href="https://huggingface.co/datasets/anonymous-8421/VL-DocIR/tree/main">Browse dataset files</a> · <a href="https://huggingface.co/datasets/anonymous-8421/VL-DocIR/blob/40a1818110c20e9279bbb4a3b6283ceac2d631ba/README.md">Dataset documentation at the inspected revision</a></p>
+    </div>
+  </section>
+  <section id="citation" class="section reading">
+    <div class="citation-heading"><h2>BibTeX</h2><button id="copy-bibtex" type="button">Copy BibTeX</button></div>
+    <pre><code id="bibtex">@inproceedings{ott2026vldocir,
+  title     = {VL-DocIR: A Benchmark for Vision-Based Long Document Information Retrieval},
+  author    = {Ott, Simon and Chen, Yufan and Liu, Ruiping and Zheng, Junwei and
+               Wei, Jiale and Wen, Di and Peng, Kunyu and Zhang, Jiaming and
+               Stiefelhagen, Rainer},
+  booktitle = {Advances in Neural Information Processing Systems},
+  year      = {2026},
+  url       = {https://openreview.net/forum?id=SxsberZw0W}
+}
+</code></pre>
+    <p id="copy-status" role="status" aria-live="polite"></p>
+    <p><a href="citation.bib" download>Download citation</a> · <a href="https://openreview.net/forum?id=SxsberZw0W">Paper on OpenReview</a></p>
+  </section>
+</main>
+<footer class="reading">
+  <p>Contact: <a href="mailto:simon.ott@student.kit.edu">Simon Ott</a> and <a href="mailto:yufan.chen@kit.edu">Yufan Chen</a>.</p>
+  <p>Figures, examples and reported results are taken from the VL-DocIR manuscript. Project-page layout references: <a href="https://jonbarron.info/mipnerf/">Mip-NeRF</a>, <a href="https://nerfies.github.io/">Nerfies</a> and <a href="https://dreamfusion3d.github.io/">DreamFusion</a>.</p>
+</footer>
+</body>
+</html>
