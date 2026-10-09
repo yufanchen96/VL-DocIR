@@ -123,7 +123,7 @@ Use the [Hugging Face dataset repository](https://huggingface.co/datasets/anonym
 
 The Hub exposes `questions`, `question_evidences`, `documents` and `document_pages` as configurations, each with a split named `train`. This is a packaging label for the released collections, rather than a separate benchmark training partition.
 
-Example using the inspected dataset revision:
+Load the questions collection:
 
 ```python
 from datasets import load_dataset
@@ -174,6 +174,6 @@ Yufan Chen (corresponding author): [yufan.chen@kit.edu](mailto:yufan.chen@kit.ed
 
 ## Project page
 
-Static website source is in `docs/`. It uses the original manuscript figures and no generated artwork. Layout references: [Mip-NeRF](https://jonbarron.info/mipnerf/), [Nerfies](https://nerfies.github.io/) and [DreamFusion](https://dreamfusion3d.github.io/).
+The [project page](https://yufanchen96.github.io/VL-DocIR/) source is in `docs/`.
 
 GitHub Pages deploys the `docs/` directory through the workflow in `.github/workflows/pages.yml`. To preview locally, run `python3 -m http.server --directory docs 8000` and visit `http://localhost:8000`.
