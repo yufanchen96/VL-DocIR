@@ -8,7 +8,7 @@ Karlsruhe Institute of Technology; Hunan University (Jiaming Zhang)
 
 <sup>&ast;</sup> Equal contribution. <sup>†</sup> Corresponding author: Yufan Chen.
 
-[Paper](https://openreview.net/pdf?id=SxsberZw0W) · [OpenReview](https://openreview.net/forum?id=SxsberZw0W) · [Project page](https://yufanchen96.github.io/VL-DocIR/) · [Dataset](https://huggingface.co/datasets/anonymous-8421/VL-DocIR) · [Dataset files](https://huggingface.co/datasets/anonymous-8421/VL-DocIR/tree/main)
+[Paper](https://arxiv.org/pdf/2610.17057) · [arXiv](https://arxiv.org/abs/2610.17057) · [OpenReview](https://openreview.net/forum?id=SxsberZw0W) · [Project page](https://yufanchen96.github.io/VL-DocIR/) · [Dataset](https://huggingface.co/datasets/anonymous-8421/VL-DocIR) · [Dataset files](https://huggingface.co/datasets/anonymous-8421/VL-DocIR/tree/main)
 
 ## Abstract
 
@@ -157,7 +157,10 @@ Generated annotations and related metadata are released under CC BY 4.0, as desc
                Stiefelhagen, Rainer},
   booktitle = {Advances in Neural Information Processing Systems},
   year      = {2026},
-  url       = {https://openreview.net/forum?id=SxsberZw0W}
+  eprint    = {2610.17057},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.AI},
+  url       = {https://arxiv.org/abs/2610.17057}
 }
 ```
 
